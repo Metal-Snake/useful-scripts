@@ -101,8 +101,8 @@ find -E "$sourcePath" -iregex ".*.($suffixes)" |
           end if
         end repeat
 
-        if leftIndex is missing value then set leftIndex to 4
-        if middleIndex is missing value then set middleIndex to 1
+        if leftIndex is missing value then set leftIndex to 1
+        if middleIndex is missing value then set middleIndex to 2
         if rightIndex is missing value then set rightIndex to 3
 
         tell desktop leftIndex
