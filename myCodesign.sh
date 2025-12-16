@@ -18,7 +18,7 @@ fi
 
 target="$1"
 
-xattr -cr "$target"
+xattr -cr "$target" || true
 # Run codesign verification and capture output (do not exit on non-zero)
 output="$(codesign --verify --deep --verbose "$target" 2>&1 || true)"
 
@@ -26,7 +26,9 @@ echo "$output"
 
 if grep -q "code object is not signed at all" <<< "$output"; then
   echo "Target is not signed. Signing with ad-hoc identity..."
-  codesign --force --deep -s - "$target"
+  codesign --force --deep -s - "$target" || true
 else
   echo "Target is already signed or another error occurred."
 fi
+
+
