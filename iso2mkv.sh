@@ -6,9 +6,10 @@ IFS=$'\n\t'
 
 DRY_RUN=0
 MIN_LENGTH=0
+VERBOSE=0
 
 usage() {
-    echo "Usage: $0 [--dry-run|-n] <input_directory> <output_directory>" >&2
+    echo "Usage: $0 [--dry-run|-n] [--verbose|-v] <input_directory> <output_directory>" >&2
 }
 
 # Log a message with a timestamp.
@@ -47,6 +48,10 @@ while [[ $# -gt 0 ]]; do
     case "$1" in
         -n|--dry-run)
             DRY_RUN=1
+            shift
+            ;;
+        -v|--verbose)
+            VERBOSE=1
             shift
             ;;
         -h|--help)
@@ -128,7 +133,9 @@ convert_source() {
     done_marker="$dest_dir/.iso2mkv.${base_noext}.done"
 
     if [[ -f "$done_marker" ]] || compgen -G "$dest_dir/${base_noext}"'*.mkv' >/dev/null; then
-        log "Skipping (already exists): $source_label"
+        if [[ "$VERBOSE" == "1" ]]; then
+            log "Skipping (already exists): $source_label"
+        fi
         return 0
     fi
 
