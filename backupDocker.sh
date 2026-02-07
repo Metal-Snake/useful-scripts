@@ -379,7 +379,7 @@ backup_all_compose_stacks() {
 
     backup_compose_stack "$compose_file" "$d" "${DOCKER_BASE_DST}/${stack_name}" "${extra_excludes[@]}"
 
-    if [[ "$stack_name" == "navidrome" ]]; then
+    if [[ "$stack_name" == "navidrome-main" ]]; then
       backup_path "/volume1/Pluto/Navidrome" "/volumeUSB2/usbshare/Navidrome"
     fi
   done

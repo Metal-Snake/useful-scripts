@@ -10,6 +10,7 @@ This script splits up a triple wallpaper image (e.g. 15360x2880) into three wall
 
 ### myCodesign.sh
 This script codesigns a given binary or app and applies the +x permission so that unsigned apps can be run without annoying Gatekeeper warnings.
+Can be used with Hazel to automatically codesign apps when they are copied to a specific directory.
 
 ### iso2mkv.sh
 This script converts all ISO files and DVD folder structures (VIDEO_TS) in a given directory into MKV files.

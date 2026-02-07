@@ -149,7 +149,7 @@ convert_source() {
     fi
 
     local tmp_out
-    tmp_out="$(mktemp -d "$dest_dir/.iso2mkv.${base_noext}.XXXXXX")"
+    tmp_out="$(mktemp -d "${TMPDIR:-/tmp}/iso2mkv.${base_noext}.XXXXXX")"
     log "Converting: $source_label -> $dest_dir"
 
     cmd=(makemkvcon mkv "$makemkv_source" all "$tmp_out" "--minlength=$MIN_LENGTH")
@@ -198,7 +198,7 @@ convert_source() {
     run : >"$done_marker"
 }
 
-# Find all ISO files and DVD folder structures (VIDEO_TS) and convert them
+# Find all ISO files, DVD folders (VIDEO_TS) and Blu-Ray folders (BDMV) and convert them
 found_any=0
 
 while IFS= read -r -d '' iso_file; do
@@ -238,6 +238,25 @@ while IFS= read -r -d '' video_ts_dir; do
     convert_source "$dvd_root" "dvd:$video_ts_dir" "$dest_dir" "$dvd_base_noext"
 done < <(find "$input_directory" -type d -iname 'VIDEO_TS' -print0)
 
+while IFS= read -r -d '' bdmv_dir; do
+    found_any=1
+    bluray_root="$(dirname "$bdmv_dir")"
+    rel_dir_path="$(rel_from_input "$bluray_root")"
+    dest_dir="$(dest_dir_from_rel "$rel_dir_path")"
+
+    bluray_base_noext="$(basename "$bluray_root")"
+
+    if [[ "$DRY_RUN" == "1" ]]; then
+        convert_source "$bluray_root" "$bluray_root" "$dest_dir" "$bluray_base_noext"
+        continue
+    fi
+
+    if convert_source "$bluray_root" "$bluray_root" "$dest_dir" "$bluray_base_noext"; then
+        continue
+    fi
+    convert_source "$bluray_root" "$bdmv_dir" "$dest_dir" "$bluray_base_noext"
+done < <(find "$input_directory" -type d -iname 'BDMV' -print0)
+
 if [[ $found_any -eq 0 ]]; then
-    echo "No ISO files or VIDEO_TS directories found in $input_directory" >&2
+    echo "No ISO files, VIDEO_TS or BDMV directories found in $input_directory" >&2
 fi
