@@ -190,7 +190,9 @@ prune_increments() {
   [[ -n "$PRUNE_OLDER_THAN" ]] || return 0
 
   log "Pruning increments older than $PRUNE_OLDER_THAN in: $repo"
-  run rdiff-backup --new --force remove increments --older-than "$PRUNE_OLDER_THAN" "$repo"
+
+  ## returns code 2 when no increments are found, which causes the script to fail, so we ignore it
+  run rdiff-backup --new --force remove increments --older-than "$PRUNE_OLDER_THAN" "$repo" || true
 }
 
 # Execute a command or only log it when DRY_RUN is enabled.
@@ -380,7 +382,9 @@ backup_all_compose_stacks() {
     backup_compose_stack "$compose_file" "$d" "${DOCKER_BASE_DST}/${stack_name}" "${extra_excludes[@]}"
 
     if [[ "$stack_name" == "navidrome-main" ]]; then
+      log "Backing up Navidrome data folder"
       backup_path "/volume1/Pluto/Navidrome" "/volumeUSB2/usbshare/Navidrome"
+      prune_increments "/volumeUSB2/usbshare/Navidrome"
     fi
   done
 }

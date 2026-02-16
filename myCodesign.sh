@@ -29,10 +29,6 @@ if grep -q "code object is not signed at all" <<< "$output"; then
   codesign --force --deep -s - "$target" || true
 	exit 0
 fi
-if grep -q "valid on disk" <<< "$output"; then 
-  codesign --force --deep -s - "$target" || true
-  exit 0
-fi
 if grep -q "code has no resources but signature indicates they must be present" <<< "$output"; then
   codesign --force --deep -s - "$target" || true
   exit 0
